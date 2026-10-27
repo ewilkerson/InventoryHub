@@ -67,6 +67,14 @@ else
 
         try
         {
+        // var authState = await authStateProvider.GetAuthenticationStateAsync();
+        // var user = authState.User;
+
+        // if (user.Identity is null || !user.Identity.IsAuthenticated)
+        // {
+        //     return "The user is NOT authenticated.";
+        // }
+
             //products = new Product[]{};
             // Seamless HTTP GET to API
             products = await Http.GetFromJsonAsync<Product[]>("api/products");

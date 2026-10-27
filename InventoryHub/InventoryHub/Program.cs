@@ -85,7 +85,14 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("CanDeleteUsers", policy =>
         policy.RequireClaim("Permission", Permissions.DeleteUsers));
+
+    options..AddPolicy("RequireAdminRole",
+         policy => policy.RequireRole("Admin"));
+
+    otion..AddPolicy("RequireSuperUserRole",
+         policy => policy.RequireRole("SuperUser"));
 });
+
 
 //============================================
 
