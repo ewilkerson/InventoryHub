@@ -1,0 +1,46 @@
+﻿@page "/product"
+@using InventoryHub.Models
+@using InventoryHub.Services
+@inject IProductService ProductService
+
+<h3>Product List</h3>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>SKU</th>
+                <th>Price</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.SKU</td>
+                    <td>@product.UnitPrice.ToString("C")</td>
+                    <td>@product.StockQuantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    private IEnumerable<Product>? products;
+
+    protected override void OnInitialized()
+    {
+        // Fetches product data using the GetAllProducts method from ProductService.cs[cite: 3]
+        products = ProductService.GetAllProducts();
+    }
+}

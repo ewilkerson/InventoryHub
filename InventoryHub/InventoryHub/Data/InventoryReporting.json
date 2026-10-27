@@ -1,0 +1,117 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Electronics"
+    },
+    {
+      "id": 2,
+      "name": "Office Supplies"
+    },
+    {
+      "id": 3,
+      "name": "Breakroom"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": 1,
+      "companyName": "TechDistributors Inc.",
+      "contactEmail": "sales@techdistributors.com"
+    },
+    {
+      "id": 2,
+      "companyName": "Global Office Solutions",
+      "contactEmail": "orders@globaloffice.com"
+    },
+    {
+      "id": 3,
+      "companyName": "BevAndSnack Co.",
+      "contactEmail": "supply@bevandsnack.com"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Wireless Mouse",
+      "sku": "WM-1001",
+      "unitPrice": 25.99,
+      "stockQuantity": 150,
+      "reorderLevel": 20,
+      "categoryId": 1
+    },
+    {
+      "id": 2,
+      "name": "Mechanical Keyboard",
+      "sku": "MK-2005",
+      "unitPrice": 85.50,
+      "stockQuantity": 75,
+      "reorderLevel": 10,
+      "categoryId": 1
+    },
+    {
+      "id": 3,
+      "name": "Printer Paper (Ream)",
+      "sku": "PP-500",
+      "unitPrice": 6.49,
+      "stockQuantity": 300,
+      "reorderLevel": 50,
+      "categoryId": 2
+    },
+    {
+      "id": 4,
+      "name": "Whiteboard Markers (4-Pack)",
+      "sku": "WM-4PK",
+      "unitPrice": 4.99,
+      "stockQuantity": 200,
+      "reorderLevel": 30,
+      "categoryId": 2
+    },
+    {
+      "id": 5,
+      "name": "Dark Roast Coffee Beans",
+      "sku": "DR-COFF-1LB",
+      "unitPrice": 14.99,
+      "stockQuantity": 80,
+      "reorderLevel": 15,
+      "categoryId": 3
+    }
+  ],
+  "transactions": [
+    {
+      "id": 1,
+      "productId": 1,
+      "transactionType": "Restock",
+      "quantity": 50,
+      "transactionDate": "2026-10-01T08:30:00"
+    },
+    {
+      "id": 2,
+      "productId": 2,
+      "transactionType": "Sale",
+      "quantity": 2,
+      "transactionDate": "2026-10-15T14:45:00"
+    },
+    {
+      "id": 3,
+      "productId": 3,
+      "transactionType": "Sale",
+      "quantity": 10,
+      "transactionDate": "2026-10-18T09:15:00"
+    },
+    {
+      "id": 4,
+      "productId": 4,
+      "transactionType": "Restock",
+      "quantity": 100,
+      "transactionDate": "2026-10-20T11:00:00"
+    },
+    {
+      "id": 5,
+      "productId": 5,
+      "transactionType": "Sale",
+      "quantity": 3,
+      "transactionDate": "2026-10-22T16:20:00"
+    }
+  ]
+}

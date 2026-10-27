@@ -1,0 +1,145 @@
+﻿@page "/dashboardApis"
+@using InventoryHub.Client.Shared.Models
+@inject HttpClient Http
+
+<h2 class="mb-4">Inventory Dashboard</h2>
+
+
+<div class="row">
+    <!-- Total Inventory Value "Chart" -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Inventory Value by Category</h5>
+            </div>
+            <div class="card-body">
+@if (isLoading)
+{
+    <p><em>Loading chart data...</em></p>
+} else @if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+else if (inventoryValues != null)
+{
+                    var maxVal = inventoryValues.Max(v => v.TotalInventoryValue);
+                    
+                    @foreach (var item in inventoryValues)
+                    {
+                        var percentage = maxVal > 0 ? (item.TotalInventoryValue / maxVal) * 100 : 0;
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>@item.CategoryName</strong>
+                                <span>@item.TotalInventoryValue.ToString("C") (@item.TotalItemsInStock items)</span>
+                            </div>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: @percentage.ToString("0")%;" 
+                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Restock Alerts Table -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">Restock Alerts</h5>
+            </div>
+            <div class="card-body">
+                @if (isLoading2)
+                {
+                    <p><em>Loading alerts...</em></p>
+                }
+                else if (restockAlerts == null || !restockAlerts.Any())
+                {
+                    <div class="alert alert-success">All product stock levels are healthy!</div>
+                }
+                else @if (restockAlerts != null)
+                {
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Current Stock</th>
+                                <th>Reorder Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var alert in restockAlerts)
+                            {
+                                <tr class="table-warning">
+                                    <td>
+                                        <strong>@alert.ProductName</strong><br />
+                                        <small class="text-muted">@alert.SKU | @alert.CategoryName</small>
+                                    </td>
+                                    <td class="text-danger fw-bold">@alert.StockQuantity</td>
+                                    <td>@alert.ReorderLevel</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<InventoryValueReportDto>? inventoryValues;
+    private IEnumerable<RestockReportDto>? restockAlerts;
+    private string? errorMessage;
+    private bool isLoading = true;
+    private bool isLoading2 = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        
+                try
+        {
+
+        // Fetch both reports concurrently for better performance
+
+        var valueTask = Http.GetFromJsonAsync<IEnumerable<InventoryValueReportDto>>("api/reports/inventory-value");
+      var alertsTask = Http.GetFromJsonAsync<IEnumerable<RestockReportDto>>("api/reports/restock-alerts");
+
+       await Task.WhenAll(valueTask, alertsTask);
+
+        inventoryValues = await valueTask ?? Array.Empty<InventoryValueReportDto>();
+        restockAlerts = await alertsTask ?? Array.Empty<RestockReportDto>();
+
+
+                }
+        catch (HttpRequestException ex)
+        {
+             if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                // NavigationManager.NavigateTo("/login");
+             }
+             else
+             {
+                errorMessage = $"Server error: {ex.Message}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while loading the data. Please verify your connection.";
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            isLoading2 = false;
+        }
+
+    }
+}

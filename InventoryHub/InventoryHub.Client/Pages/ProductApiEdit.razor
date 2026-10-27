@@ -1,0 +1,163 @@
+﻿@page "/productApis/edit/{Id:int}"
+@using InventoryHub.Client.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<h3>Edit Product</h3>
+
+@if (isLoading)
+{
+    <p><em>Loading product details...</em></p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+    <a href="/products" class="btn btn-secondary">Back to List</a>
+}
+else if (product != null)
+{
+    <div class="card shadow-sm mt-3">
+        <div class="card-body">
+            <EditForm Model="@product" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Product Name</label>
+                        <InputText @bind-Value="product.Name" class="form-control" />
+                        <ValidationMessage For="@(() => product.Name)" class="text-danger" />
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">SKU</label>
+                        <InputText @bind-Value="product.SKU" class="form-control" />
+                        <ValidationMessage For="@(() => product.SKU)" class="text-danger" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Unit Price ($)</label>
+                        <InputNumber @bind-Value="product.UnitPrice" class="form-control" />
+                        <ValidationMessage For="@(() => product.UnitPrice)" class="text-danger" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Stock Quantity</label>
+                        <InputNumber @bind-Value="product.StockQuantity" class="form-control" />
+                        <ValidationMessage For="@(() => product.StockQuantity)" class="text-danger" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Reorder Level</label>
+                        <InputNumber @bind-Value="product.ReorderLevel" class="form-control" />
+                        <ValidationMessage For="@(() => product.ReorderLevel)" class="text-danger" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Category ID</label>
+                    <InputNumber @bind-Value="product.CategoryId" class="form-control" />
+                    <ValidationMessage For="@(() => product.CategoryId)" class="text-danger" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span> Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Save Changes</span>
+                        }
+                    </button>
+                    <a href="/products" class="btn btn-secondary">Cancel</a>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    // Captures the {Id} from the URL route
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+    private string? errorMessage;
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch the existing product data to populate the form
+            product = await Http.GetFromJsonAsync<Product>($"api/productApis/{Id}");
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+            else if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                errorMessage = "Product not found. It may have been deleted.";
+            }
+            else
+            {
+                errorMessage = $"Server error: {ex.Message}";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "An unexpected error occurred while loading the product.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (product == null) return;
+        
+        isSaving = true;
+        errorMessage = null;
+
+        try
+        {
+            // Submit the updated model via PUT request
+            var response = await Http.PutAsJsonAsync($"api/productApis/{Id}", product);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Navigate back to the product list on success
+                NavigationManager.NavigateTo("/productApis");
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                errorMessage = "Invalid data submitted. Please check the form requirements.";
+            }
+            else
+            {
+                errorMessage = "Failed to update the product. Please try again later.";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "A network error occurred while communicating with the server.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

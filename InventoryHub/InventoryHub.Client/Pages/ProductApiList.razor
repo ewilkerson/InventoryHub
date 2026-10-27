@@ -1,0 +1,121 @@
+﻿@page "/productApis"
+@using InventoryHub.Client.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h3>Inventory Management - Products</h3>
+
+
+@if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+    else if (products != null)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in products)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@product.SKU</td>
+                        <td>@product.UnitPrice.ToString("C")</td>
+                        <td>@product.StockQuantity</td>
+                        <td>
+                            <!-- Routing to Details and Edit components -->
+                            <a href="/productApis/edit/@product.Id" class="btn btn-primary btn-sm">Edit</a>
+                            <button @onclick="() => DeleteProduct(product.Id)" class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a href="/productApis/create" class="btn btn-success">Add New Product</a>
+    }
+
+@code {
+    private Product[]? products;
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            //products = new Product[]{};
+            // Seamless HTTP GET to API
+            products = await Http.GetFromJsonAsync<Product[]>("api/productApis");
+
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                errorMessage = $"Server error: {ex.Message}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while loading the data. Please verify your connection.";
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        // Seamless HTTP DELETE to API
+
+        try
+        {
+            var response = await Http.DeleteAsync($"api/products/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadProducts(); // Refresh the current page
+            }
+            else
+            {
+                errorMessage = "Failed to delete the product. Ensure you have the correct permissions.";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "A network error occurred while trying to delete the product.";
+        }
+
+    }
+}
