@@ -2,12 +2,19 @@
 @using InventoryHub.Models
 @using InventoryHub.Services
 @inject IProductService ProductService
+@inject NavigationManager NavigationManager
 
 <h3>Product List</h3>
 
-@if (products == null)
+@if (isLoading)
 {
     <p><em>Loading...</em></p>
+}
+else if (errorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
 }
 else
 {
@@ -37,10 +44,38 @@ else
 
 @code {
     private IEnumerable<Product>? products;
+    private string? errorMessage;
+    private bool isLoading = true;
+
 
     protected override void OnInitialized()
     {
+        try
+        {
+
         // Fetches product data using the GetAllProducts method from ProductService.cs[cite: 3]
         products = ProductService.GetAllProducts();
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                errorMessage = $"Server error: {ex.Message}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while loading the data. Please verify your connection.";
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
     }
 }

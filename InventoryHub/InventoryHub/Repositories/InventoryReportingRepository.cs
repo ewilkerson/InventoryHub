@@ -1,6 +1,7 @@
 ﻿using InventoryHub.Data;
 using InventoryHub.Models;
 using Microsoft.EntityFrameworkCore;
+using InventoryHub.Shared.Models;
 
 namespace InventoryHub.Repositories
 {
@@ -9,7 +10,7 @@ namespace InventoryHub.Repositories
         IEnumerable<Product> GetProductsWithCategories();
         IEnumerable<object> GetTransactionHistory();
         IEnumerable<Product> GetProductsToRestock();
-        IEnumerable<object> GetInventoryValueByCategory();
+        IEnumerable<InventoryValueReportDto> GetInventoryValueByCategory();
     }
     public class InventoryReportingRepository : IInventoryReportingRepository
     {
@@ -64,13 +65,13 @@ namespace InventoryHub.Repositories
         }
 
         // 4. Calculate total inventory value per category
-        public IEnumerable<object> GetInventoryValueByCategory()
+        public IEnumerable<InventoryValueReportDto> GetInventoryValueByCategory()
         {
             // .GroupBy() groups the records, and .Sum() performs the aggregate calculations
             return  _context.Products
                 .Include(p => p.Category)
                 .GroupBy(p => p.Category!.Name)
-                .Select(g => new
+                .Select(g => new InventoryValueReportDto
                 {
                     CategoryName = g.Key,
                     TotalItemsInStock = g.Sum(p => p.StockQuantity),

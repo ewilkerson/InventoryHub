@@ -1,6 +1,7 @@
 ﻿using InventoryHub.Models;
 using InventoryHub.Repositories;
 using Microsoft.Extensions.Logging;
+using InventoryHub.Shared.Models;
 
 namespace InventoryHub.Services
 {
@@ -9,7 +10,7 @@ namespace InventoryHub.Services
         IEnumerable<Product> GetProductsWithCategories();
         IEnumerable<object> GetTransactionHistory();
         IEnumerable<Product> GetProductsToRestock();
-        IEnumerable<object> GetInventoryValueByCategory();
+        IEnumerable<InventoryValueReportDto> GetInventoryValueByCategory();
     }
 
     public class InventoryReportingService: IInventoryReportingService
@@ -39,7 +40,7 @@ namespace InventoryHub.Services
             _logger.LogWarning("GetProductsToRestock()");
             return  _repository.GetProductsToRestock();
         }
-        public IEnumerable<object> GetInventoryValueByCategory()
+        public IEnumerable<InventoryValueReportDto> GetInventoryValueByCategory()
         {
             _logger.LogWarning("GetInventoryValueByCategory()");
             return  _repository.GetInventoryValueByCategory();

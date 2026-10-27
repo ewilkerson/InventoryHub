@@ -1,6 +1,7 @@
 ﻿@page "/dashboardApis"
 @using InventoryHub.Client.Shared.Models
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 <h2 class="mb-4">Inventory Dashboard</h2>
 
@@ -123,7 +124,7 @@ else if (inventoryValues != null)
         {
              if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                // NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo("/login");
              }
              else
              {

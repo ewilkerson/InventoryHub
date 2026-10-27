@@ -1,8 +1,10 @@
 ﻿@page "/dashboard"
-@using System.Collections
+using System.Collections
+@using InventoryHub.Models
 @using InventoryHub.Services
 @using InventoryHub.Shared.Models
 @inject IInventoryReportingService InventoryReportingService
+@inject NavigationManager NavigationManager
 
 <h2 class="mb-4">Inventory Dashboard</h2>
 
@@ -61,6 +63,12 @@ else if (inventoryValues != null)
                 {
                     <p><em>Loading alerts...</em></p>
                 }
+                else if (errorMessage != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                    </div>
+                }
                 else if (restockAlerts == null || !restockAlerts.Any())
                 {
                     <div class="alert alert-success">All product stock levels are healthy!</div>
@@ -110,27 +118,39 @@ else if (inventoryValues != null)
             var valueTask = InventoryReportingService.GetInventoryValueByCategory().ToList();
             var alertsTask = InventoryReportingService.GetProductsToRestock().ToList();
 
-            inventoryValues = valueTask.Select(v => new InventoryValueReportDto
+            // Cast the object to dynamic to access underlying properties
+            inventoryValues = valueTask.Select(v =>
             {
-                CategoryName = (string)v.CategoryName,
-                TotalItemsInStock = (int)v.TotalItemsInStock,
-                TotalInventoryValue = (decimal)v.TotalInventoryValue
+                dynamic dyn = v;
+                return new InventoryValueReportDto
+                {
+                    CategoryName = (string)dyn.CategoryName,
+                    TotalItemsInStock = (int)dyn.TotalItemsInStock,
+                    TotalInventoryValue = (decimal)dyn.TotalInventoryValue
+                };
             });
 
-            restockAlerts = alertsTask.Select(a => new RestockReportDto
+            // Since GetProductsToRestock returns IEnumerable<Product>,
+            // 'a' is already strongly typed.
+            restockAlerts = alertsTask.Select(a => 
             {
-                ProductName = (string)a.ProductName,
-                SKU = (string)a.SKU,
-                StockQuantity = (int)a.StockQuantity,
-                ReorderLevel = (int)a.ReorderLevel,
-                CategoryName = (string)a.CategoryName
+                dynamic dyn = a;
+
+            return new RestockReportDto
+                {
+                    ProductName = (string)dyn.ProductName,
+                    SKU = (string)dyn.SKU,
+                    StockQuantity = (int)dyn.StockQuantity,
+                    ReorderLevel = (int)dyn.ReorderLevel,
+                    CategoryName = (string)dyn.Category?.Name ?? "Uncategorized"
+                };
             });
         }
         catch (HttpRequestException ex)
         {
              if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                // NavigationManager.NavigateTo("/login");
+                 NavigationManager.NavigateTo("/login");
              }
              else
              {

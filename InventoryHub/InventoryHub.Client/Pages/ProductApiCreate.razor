@@ -31,7 +31,7 @@
     private async Task HandleValidSubmit()
     {
         // Seamless HTTP POST to API
-        var response = await Http.PostAsJsonAsync("api/productApis", newProduct);
+        var response = await Http.PostAsJsonAsync("api/products", newProduct);
         if (response.IsSuccessStatusCode)
         {
             NavigationManager.NavigateTo("/productApis");

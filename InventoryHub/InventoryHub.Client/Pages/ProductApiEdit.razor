@@ -98,7 +98,7 @@ else if (product != null)
         try
         {
             // Fetch the existing product data to populate the form
-            product = await Http.GetFromJsonAsync<Product>($"api/productApis/{Id}");
+            product = await Http.GetFromJsonAsync<Product>($"api/products/{Id}");
         }
         catch (HttpRequestException ex)
         {
@@ -135,7 +135,7 @@ else if (product != null)
         try
         {
             // Submit the updated model via PUT request
-            var response = await Http.PutAsJsonAsync($"api/productApis/{Id}", product);
+            var response = await Http.PutAsJsonAsync($"api/products/{Id}", product);
 
             if (response.IsSuccessStatusCode)
             {

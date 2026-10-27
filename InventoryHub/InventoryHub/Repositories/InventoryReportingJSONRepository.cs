@@ -1,6 +1,7 @@
 ﻿using InventoryHub.Models;
 using InventoryHub.Repositories;
 using System.Text.Json;
+using InventoryHub.Shared.Models;
 
 namespace InventoryHub.Repository
 {
@@ -77,7 +78,7 @@ namespace InventoryHub.Repository
             return productsToRestock;
         }
 
-        public IEnumerable<object> GetInventoryValueByCategory()
+        public IEnumerable<InventoryValueReportDto> GetInventoryValueByCategory()
         {
             var data = LoadData();
 
@@ -91,7 +92,7 @@ namespace InventoryHub.Repository
             return data.Products
                 .Where(p => p.Category != null)
                 .GroupBy(p => p.Category!.Name)
-                .Select(g => new
+                .Select(g => new InventoryValueReportDto
                 {
                     CategoryName = g.Key,
                     TotalItemsInStock = g.Sum(p => p.StockQuantity),

@@ -69,7 +69,7 @@ else
         {
             //products = new Product[]{};
             // Seamless HTTP GET to API
-            products = await Http.GetFromJsonAsync<Product[]>("api/productApis");
+            products = await Http.GetFromJsonAsync<Product[]>("api/products");
 
         }
         catch (HttpRequestException ex)
