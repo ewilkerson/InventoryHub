@@ -74,6 +74,19 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri("https://inventoryhub.dev.localhost:7124") // Replace with your backend URL
 });
 
+builder.Services.AddDefaultIdentity()
+    .AddRoles() // Enables native role support
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewReports", policy =>
+        policy.RequireClaim("Permission", Permissions.ViewReports));
+
+    options.AddPolicy("CanDeleteUsers", policy =>
+        policy.RequireClaim("Permission", Permissions.DeleteUsers));
+});
+
 //============================================
 
 
