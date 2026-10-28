@@ -8,10 +8,12 @@ using InventoryHub.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using InventoryHub.Models; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,11 +72,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddHttpClient();
 
-// Optional: If you want to allow direct injection of a generic HttpClient with a base address
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress = new Uri("https://inventoryhub.dev.localhost:7124") // Replace with your backend URL
-});
+// Locate the HttpClient injection and change it from the custom domain:
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://inventoryhub.dev.localhost:7124/") });
+
+// To standard localhost:
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7124/") });
 
 //builder.Services.AddDefaultIdentity()
 //    .AddRoles() // Enables native role support
@@ -177,5 +179,18 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 //============================================
 
+
+//================================================================
+// Basic routes
+//================================================================
+
+app.MapGet("/hello", () => "Hey Earl!!!");
+
+
+app.MapGet("/products", (IProductService productService) => productService.GetAllProducts());
+
+app.MapGet("api/minimal/products", (IProductService productService) => productService.GetAllProducts());
+
+//================================================================
 
 app.Run();

@@ -104,7 +104,7 @@ else if (product != null)
         {
             if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo("Account/Login");
             }
             else if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
