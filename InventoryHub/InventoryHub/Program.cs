@@ -2,9 +2,11 @@ using InventoryHub.Client.Pages;
 using InventoryHub.Components;
 using InventoryHub.Components.Account;
 using InventoryHub.Data;
+using InventoryHub.Models; 
 using InventoryHub.Repositories;
 using InventoryHub.Repository;
 using InventoryHub.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
-using InventoryHub.Models; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +82,12 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 //builder.Services.AddDefaultIdentity()
 //    .AddRoles() // Enables native role support
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o => {
+    o.LoginPath = "/Account/Login"; o.AccessDeniedPath = "/Account/AccessDenied";
+    o.Cookie.Name = "SafeVault.Auth"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict;
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always; o.SlidingExpiration = true; o.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+});
 
 builder.Services.AddAuthorization(options =>
 {
