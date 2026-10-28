@@ -32,6 +32,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+
+
 // 3. Dependency Injection
 //builder.Services.AddScoped<IProductApiRepository, ProductApiRepository>();
 //builder.Services.AddScoped<IInventoryReportingApiRepository, InventoryReportingApiRepository>();
@@ -74,25 +76,37 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri("https://inventoryhub.dev.localhost:7124") // Replace with your backend URL
 });
 
-builder.Services.AddDefaultIdentity()
-    .AddRoles() // Enables native role support
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity()
+//    .AddRoles() // Enables native role support
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanViewReports", policy =>
-        policy.RequireClaim("Permission", Permissions.ViewReports));
-
-    options.AddPolicy("CanDeleteUsers", policy =>
-        policy.RequireClaim("Permission", Permissions.DeleteUsers));
-
-    options..AddPolicy("RequireAdminRole",
+    options.AddPolicy("RequireAdminRole",
          policy => policy.RequireRole("Admin"));
 
-    otion..AddPolicy("RequireSuperUserRole",
+    options.AddPolicy("RequireSuperUserRole",
          policy => policy.RequireRole("SuperUser"));
 });
 
+////Configure EF Core with an in-memory database
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//   options.UseInMemoryDatabase("AppDb"));
+
+////Add Indentity services - 
+//builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders()
+    .AddApiEndpoints();
 
 //============================================
 
@@ -159,6 +173,8 @@ app.MapAdditionalIdentityEndpoints();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+//app.MapIdentityApi<IdentityUser>();
+app.MapIdentityApi<ApplicationUser>();
 //============================================
 
 
