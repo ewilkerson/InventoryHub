@@ -14,4 +14,4 @@ To complete this assignment, you will submit the secure code and tests you’ve 
 In earlier activities, you: 
 * Generated secure code for input validation and SQL injection prevention.
 * Implemented authentication and authorization mechanisms to control user access.
-* Debugged and resolved security vulnerabilities in the SafeVault application.
+* Debugged and resolved security vulnerabilities in the InventoryHub application.
