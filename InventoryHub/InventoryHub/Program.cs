@@ -79,10 +79,10 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 
 // Locate the HttpClient injection and change it from the custom domain:
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://inventoryhub.dev.localhost:7124/") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://inventoryhub.dev.localhost:7124") });
 
 // To standard localhost:
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7124/") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7124") });
 
 //builder.Services.AddDefaultIdentity()
 //    .AddRoles() // Enables native role support
@@ -202,7 +202,30 @@ app.MapGet("/hello", () => "Hey Earl!!!");
 
 app.MapGet("/products", (IProductService productService) => productService.GetAllProducts());
 
-app.MapGet("api/minimal/products", (IProductService productService) => productService.GetAllProducts());
+app.MapGet("/api/minimal/products", (IProductService productService) => productService.GetAllProducts());
+
+app.MapGet("/api/productlist", () =>
+{
+    return new[]
+    {
+        new
+        {
+            Id = 1,
+            Name = "Laptop",
+            Price = 1200.50,
+            Stock = 25,
+            Category = new { Id = 101, Name = "Electronics" }
+        },
+        new
+        {
+            Id = 2,
+            Name = "Headphones",
+            Price = 50.00,
+            Stock = 100,
+            Category = new { Id = 102, Name = "Accessories" }
+        }
+    };
+});
 
 //================================================================
 

@@ -118,8 +118,8 @@ else if (inventoryValues != null)
             restockAlerts = new List<RestockReportDto>();
 
 
-        var valueTask = Http.GetFromJsonAsync<IEnumerable<InventoryValueReportDto>>("api/reports/inventory-value");
-      var alertsTask = Http.GetFromJsonAsync<IEnumerable<RestockReportDto>>("api/reports/restock-alerts");
+        var valueTask = Http.GetFromJsonAsync<IEnumerable<InventoryValueReportDto>>("/api/reports/inventory-value");
+      var alertsTask = Http.GetFromJsonAsync<IEnumerable<RestockReportDto>>("/api/reports/restock-alerts");
 
        await Task.WhenAll(valueTask, alertsTask);
 

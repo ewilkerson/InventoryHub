@@ -103,7 +103,7 @@ else
 
         try
         {
-            var response = await Http.DeleteAsync($"api/products/{id}");
+            var response = await Http.DeleteAsync($"/api/products/{id}");
             if (response.IsSuccessStatusCode)
             {
                 await LoadProducts(); // Refresh the current page

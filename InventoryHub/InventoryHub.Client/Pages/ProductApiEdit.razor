@@ -135,7 +135,7 @@ else if (product != null)
         try
         {
             // Submit the updated model via PUT request
-            var response = await Http.PutAsJsonAsync($"api/products/{Id}", product);
+            var response = await Http.PutAsJsonAsync($"/api/products/{Id}", product);
 
             if (response.IsSuccessStatusCode)
             {
