@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using System;
+@using InventoryHub.Services;
 <h3>Project: Building and Deploying the Full-Stack Integration Project</h3>
 <p>
 	To complete this assignment, you’ll submit your code for a complete and optimized full-stack application, InventoryHub, which you worked on using Microsoft Copilot. The project integrates the work you completed in four previous activities and focuses on:
@@ -18,6 +20,30 @@
 		<li>Debugged and resolved security vulnerabilities in the InventoryHub application.</li>
 	</ul>
 </p>
+<h3>VaultCryptoService Example</h3>
+<p>This service provides encryption and decryption functionality for securely storing sensitive data in the vault.</p>
+<p>
+	Original Text: @originalText<br />
+	Master Password: @masterPassword
+</p>
+<p>Encrypted Text (Base64 Salt + IV + CipherText): @encryptedText</p>
+<p>
+	Decrypted Text: @decryptedText
+</p>
+<p>
+	Match successful: @(originalText == decryptedText)
+</p>
 @code {
+
+	static string originalText = "A67B9012CDEF34567890123456789012";
+	static string masterPassword = "MySecureMasterPassword!2026";
+
+	// 2. Encrypt the data
+	// This generates the salt, IV, and cipher text, returning them as a single Base64 string
+
+	static string encryptedText = VaultCryptoService.Encrypt(originalText, masterPassword);
+	// 3. Decrypt the data
+	// This parses the salt and IV from the Base64 string to reconstruct the original text
+	static string decryptedText = VaultCryptoService.Decrypt(encryptedText, masterPassword);
 
 }
