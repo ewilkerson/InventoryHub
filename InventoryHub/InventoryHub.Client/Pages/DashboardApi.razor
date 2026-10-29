@@ -1,8 +1,8 @@
 ﻿@page "/dashboardApis"
 @using InventoryHub.Client.Shared.Models
 @inject HttpClient Http
-@inject NavigationManager NavigationManager
-
+@* @inject NavigationManager NavigationManager
+ *@
 <h2 class="mb-4">Inventory Dashboard</h2>
 
 
@@ -25,7 +25,12 @@
 }
 else if (inventoryValues != null)
 {
-                    var maxVal = inventoryValues.Max(v => v.TotalInventoryValue);
+						var maxVal = 0m;
+						if (inventoryValues.Any())
+						{
+							maxVal = inventoryValues.Max(v => v.TotalInventoryValue);
+						}
+                        
                     
                     @foreach (var item in inventoryValues)
                     {
@@ -109,6 +114,9 @@ else if (inventoryValues != null)
         {
 
         // Fetch both reports concurrently for better performance
+			inventoryValues = new List<InventoryValueReportDto>();
+            restockAlerts = new List<RestockReportDto>();
+
 
         var valueTask = Http.GetFromJsonAsync<IEnumerable<InventoryValueReportDto>>("api/reports/inventory-value");
       var alertsTask = Http.GetFromJsonAsync<IEnumerable<RestockReportDto>>("api/reports/restock-alerts");
@@ -124,7 +132,7 @@ else if (inventoryValues != null)
         {
              if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                NavigationManager.NavigateTo("Account/Login");
+               // NavigationManager.NavigateTo("Account/Login");
              }
              else
              {

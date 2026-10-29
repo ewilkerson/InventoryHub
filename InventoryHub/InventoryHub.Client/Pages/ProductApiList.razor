@@ -1,8 +1,8 @@
 ﻿@page "/productApis"
 @using InventoryHub.Client.Shared.Models
 @inject HttpClient Http
-@inject NavigationManager Navigation
-
+@* @inject NavigationManager Navigation
+ *@
 <h3>Inventory Management - Products</h3>
 
 
@@ -67,24 +67,17 @@ else
 
         try
         {
-        // var authState = await authStateProvider.GetAuthenticationStateAsync();
-        // var user = authState.User;
-
-        // if (user.Identity is null || !user.Identity.IsAuthenticated)
-        // {
-        //     return "The user is NOT authenticated.";
-        // }
-
             //products = new Product[]{};
             // Seamless HTTP GET to API
-            products = await Http.GetFromJsonAsync<Product[]>("api/products");
-
+            products = new Product[] { };
+            products = await Http.GetFromJsonAsync<Product[]>("api/products") ?? new Product[] { };
+            
         }
         catch (HttpRequestException ex)
         {
             if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                Navigation.NavigateTo("Account/Login");
+              //  Navigation.NavigateTo("Account/Login");
             }
             else
             {
