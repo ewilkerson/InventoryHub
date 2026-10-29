@@ -33,6 +33,11 @@ Log.Logger = new LoggerConfiguration()
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+connectionString = builder.Configuration.GetConnectionString("AppDb") ?? throw new InvalidOperationException("Connection string 'AppDb' not found.");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
@@ -101,6 +106,7 @@ builder.Services.AddAuthorization(options =>
 ////Configure EF Core with an in-memory database
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //   options.UseInMemoryDatabase("AppDb"));
+
 
 ////Add Indentity services - 
 //builder.Services.AddIdentityApiEndpoints<IdentityUser>()
